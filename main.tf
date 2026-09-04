@@ -122,10 +122,7 @@ resource "aws_iam_role" "github_actions_terraform" {
             "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
           }
           StringLike = {
-            "token.actions.githubusercontent.com:sub" = [
-              "repo:vikramchy124-lgtm/terraform-ecommerce-project:ref:refs/heads/main",
-              "repo:vikramchy124-lgtm/terraform-ecommerce-project:pull_request"
-            ]
+            "token.actions.githubusercontent.com:sub" = "repo:vikramchy124-lgtm/terraform-ecommerce-project:*"
           }
         }
       }
