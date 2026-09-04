@@ -1,0 +1,20 @@
+# Terraform working directory and generated files
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Local variables and secrets
+*.tfvars
+*.tfvars.json
+.env
+.env.*
+
+# Terraform-generated error state
+errored.tfstate
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.vscode/
