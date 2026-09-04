@@ -96,3 +96,42 @@ module "s3" {
 
   project_name = "terraform-ecommerce"
 }
+
+# 1. Create the GitHub OIDC Identity Provider in AWS
+resource "aws_iam_openid_connect_provider" "github" {
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1", "1c58a3a8518e8759bf075b76b750d4f2df264fcd"]
+}
+
+# 2. Create the IAM Role for GitHub Actions
+resource "aws_iam_role" "github_actions_terraform" {
+  name = "github-actions-terraform-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.github.arn
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          }
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = "repo:vikramchy124-lgtm/terraform-ecommerce-project:*"
+          }
+        }
+      }
+    ]
+  })
+}
+
+# 3. Attach Administrator (or required) permissions to the IAM Role
+resource "aws_iam_role_policy_attachment" "github_actions_attach" {
+  role       = aws_iam_role.github_actions_terraform.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # Adjust policy to match least-privilege needs
+}

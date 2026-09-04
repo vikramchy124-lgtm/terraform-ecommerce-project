@@ -10,8 +10,8 @@ on:
       - main
 
 permissions:
-  id-token: write
   contents: read
+  id-token: write
 
 jobs:
   terraform:
@@ -19,16 +19,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
+      - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::594574399449:role/github-actions-terraform-role
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: us-east-1
 
       - name: Terraform Init
@@ -42,4 +44,3 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan
-        
