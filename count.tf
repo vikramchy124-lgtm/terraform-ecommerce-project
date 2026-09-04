@@ -3,10 +3,14 @@ variable "bucket_count" {
   default = 2
 }
 
+resource "random_id" "count_bucket_suffix" {
+  byte_length = 4
+}
+
 resource "aws_s3_bucket" "count_example" {
 
   count = var.bucket_count
 
-  bucket = "my-bucket-${count.index}"
+  bucket = "${var.project_name}-${count.index}-${random_id.count_bucket_suffix.hex}"
 
 }
